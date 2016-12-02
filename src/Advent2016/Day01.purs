@@ -3,12 +3,13 @@ module Advent2016.Day01 where
 import Prelude
 import Data.Array (head, filter, elem, scanl, replicate, foldl)
 import Data.Int (fromString)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..))
 import Data.Maybe.First (First(..))
+import Data.Newtype (unwrap)
 import Data.Ord (abs)
-import Data.String (uncons, split, Pattern(..))
+import Data.String (uncons, split, trim, Pattern(..))
 import Data.Traversable (traverse)
-import Data.Tuple (Tuple(..), swap)
+import Data.Tuple (Tuple(..), swap, lookup)
 
 data Dir = R | L
 data Move = Move Dir Int
@@ -19,14 +20,15 @@ type State = { pos :: Tuple Int Int
              }
 
 toDir :: Char -> Maybe Dir
-toDir 'R' = Just R
-toDir 'L' = Just L
-toDir _   = Nothing
+toDir = flip lookup [Tuple 'R' R, Tuple 'L' L]
 
 getMove :: String -> Maybe Move
 getMove s = do
     {head, tail} <- uncons s
     Move <$> toDir head <*> fromString tail
+
+getMoves :: String -> Maybe (Array Move)
+getMoves = split (Pattern ",") >>> map trim >>> traverse getMove
 
 turn :: Dir -> State -> State
 turn d st = st { heading = swap st.heading * rot d }
@@ -56,18 +58,12 @@ start = { pos: Tuple 0 0
         , actualHQ: First Nothing
         }
 
-travel :: String -> Maybe State
-travel = split (Pattern ", ") >>> traverse getMove >=> foldl (flip move) start >>> pure
-
 dist :: Tuple Int Int -> Int
 dist (Tuple x y) = abs x + abs y
 
-day01 :: String -> { hqDist :: Int, actualHQDist :: Int }
-day01 input = { hqDist: dist result.pos
-              , actualHQDist: actual
-              }
-    where
-        result = fromMaybe start $ travel input
-        actual = case result.actualHQ of
-                    First (Just p) -> dist p
-                    _ -> -1
+day01 :: String -> Maybe { hqDist :: Int, actualHQDist :: Maybe Int }
+day01 input = do
+    result <- foldl (flip move) start <$> getMoves input
+    pure { hqDist: dist result.pos
+         , actualHQDist: dist <$> unwrap result.actualHQ
+         }
