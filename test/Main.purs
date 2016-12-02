@@ -8,6 +8,7 @@ import Node.FS (FS)
 import Test.Assert (ASSERT)
 
 import Test.Day01 (testDay01)
+import Test.Day02 (testDay02)
 
 main :: forall e. Eff
             ( console :: CONSOLE
@@ -18,3 +19,4 @@ main :: forall e. Eff
 main = do
   log "Running all days..."
   testDay01
+  testDay02
