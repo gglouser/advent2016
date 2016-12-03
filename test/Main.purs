@@ -9,6 +9,7 @@ import Test.Assert (ASSERT)
 
 import Test.Day01 (testDay01)
 import Test.Day02 (testDay02)
+import Test.Day03 (testDay03)
 
 main :: forall e. Eff
             ( console :: CONSOLE
@@ -20,3 +21,4 @@ main = do
   log "Running all days..."
   testDay01
   testDay02
+  testDay03
