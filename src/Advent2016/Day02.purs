@@ -49,5 +49,5 @@ day02 :: String -> Maybe { code1 :: String, code2 :: String }
 day02 input = do
     moves <- getMoves input
     pure { code1: execute pad1 (Tuple 1 1) moves
-         , code2: execute pad2 (Tuple 3 1) moves
+         , code2: execute pad2 (Tuple 2 0) moves
          }
