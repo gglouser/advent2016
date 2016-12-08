@@ -27,9 +27,9 @@ parse s = do
     s # trim >>> lines >>> traverse (match re >=> sequence >=> parseRoom)
 
 getChecksum :: String -> String
-getChecksum name = name # toCharArray >>> filter (_ /= '-')
-                    >>> group' >>> sortBy cmp
-                    >>> take 5 >>> map head >>> fromCharArray
+getChecksum = toCharArray >>> filter (_ /= '-')
+            >>> group' >>> sortBy cmp
+            >>> take 5 >>> map head >>> fromCharArray
     where
         cmp = comparing (negate <<< length <<< tail) <> comparing head
 
