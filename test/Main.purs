@@ -16,6 +16,7 @@ import Test.Day06 (testDay06)
 import Test.Day07 (testDay07)
 import Test.Day08 (testDay08)
 import Test.Day09 (testDay09)
+import Test.Day10 (testDay10)
 
 main :: forall e. Eff
             ( console :: CONSOLE
@@ -34,3 +35,4 @@ main = do
   testDay07
   testDay08
   testDay09
+  testDay10
