@@ -23,6 +23,7 @@ import Test.Day13 (testDay13)
 -- import Test.Day14 (testDay14)
 import Test.Day15 (testDay15)
 import Test.Day16 (testDay16)
+import Test.Day17 (testDay17)
 
 main :: forall e. Eff
             ( console :: CONSOLE
@@ -48,3 +49,4 @@ main = do
   -- testDay14  -- md5 too slow
   unit <$ testDay15
   unit <$ testDay16
+  unit <$ testDay17
