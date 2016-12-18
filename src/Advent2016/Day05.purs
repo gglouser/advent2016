@@ -3,51 +3,52 @@ module Advent2016.Day05 where
 import Prelude
 import Crypto.MD5 (md5)
 import Data.Foldable (fold)
+import Data.Either (Either(..))
 import Data.Int (fromString)
-import Data.List (List(..), (:), reverse, elem, delete, (..), sort)
+import Data.List (List, (..), modifyAt)
 import Data.Maybe (Maybe(..), fromMaybe)
-import Data.String (take, drop)
-import Data.Tuple (Tuple(..), snd)
+import Data.Maybe.First (First(..))
+import Data.Newtype (unwrap)
+import Data.String (take, length, singleton)
+import Data.String.Unsafe (charAt)
+import Data.Traversable (traverse)
+import Data.Tuple (Tuple(..))
 
-tryIndex :: String -> Int -> Maybe String
-tryIndex input n = let hash = md5 $ input <> show n
-                   in if take 5 hash == "00000" then Just (take 1 (drop 5 hash)) else Nothing
-
-search :: String -> Int -> List String
-search input = go Nil 0
+nextGoodHash :: String -> Int -> Tuple String Int
+nextGoodHash key = go
     where
-        go a _ 0 = a
-        go a n k = case tryIndex input n of
-                        Just d -> go (d : a) (n+1) (k-1)
-                        Nothing -> go a (n+1) k
+        go n = let hash = md5 $ key <> show n
+               in if take 5 hash == "00000"
+                  then Tuple hash (n+1)
+                  else go (n+1)
 
-crackPassword :: String -> String
-crackPassword input = fold <<< reverse $ search input 8
+type State = { p1 :: String
+             , p2 :: List (First String)
+             }
 
-tryIndex2 :: String -> Int -> Maybe (Tuple Int String)
-tryIndex2 input n = let hash = md5 $ input <> show n
-                    in if take 5 hash == "00000"
-                       then let pos = fromMaybe (-1) <<< fromString $ take 1 (drop 5 hash)
-                                c = take 1 (drop 6 hash)
-                            in Just (Tuple pos c)
-                       else Nothing
+type Updater a b = String -> String -> a -> Either b a
 
-search2 :: String -> Int -> List (Tuple Int String)
-search2 input m = go Nil 0 (0..(m-1))
+update :: Updater State { password :: String, password2 :: String }
+update c d {p1,p2} = st'
     where
-        go a _ Nil = a
-        go a n unused = case tryIndex2 input n of
-                            Just d@(Tuple pos c) ->
-                                if elem pos unused
-                                then go (d : a) (n+1) (delete pos unused)
-                                else go a (n+1) unused
-                            Nothing -> go a (n+1) unused
+        p1' = if length p1 < 8 then p1 <> c else p1
+        p2MB = do i <- fromString c
+                  modifyAt i (append <@> First (Just d)) p2
+        p2' = fromMaybe p2 p2MB
+        st' = case traverse unwrap p2' of
+                Just r2 -> Left { password: p1', password2: fold r2 }
+                Nothing -> Right { p1:p1', p2:p2' }
 
-crackPassword2 :: String -> String
-crackPassword2 input = fold <<< map snd <<< sort $ search2 input 8
+search :: forall a b. String -> (String -> String -> a -> Either b a) -> a -> b
+search key updater initSt = go initSt 0
+    where
+        go st n = case nextGoodHash key n of
+                    Tuple h n' ->
+                        let c = singleton (charAt 5 h)
+                            d = singleton (charAt 6 h)
+                        in case updater c d st of
+                            Left result -> result
+                            Right st' -> go st' n'
 
 day05 :: String -> { password :: String, password2 :: String }
-day05 input =
-    { password: crackPassword input
-    , password2: crackPassword2 input
-    }
+day05 input = search input update { p1: "", p2: (First Nothing) <$ (0..7) }
