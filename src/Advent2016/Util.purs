@@ -4,6 +4,7 @@ module Advent2016.Util
 , lines
 , partitionEithers
 , mfilter
+, count
 , Arg(..)
 , bestFirstSearch
 ) where
@@ -42,6 +43,9 @@ mfilter :: forall m a. MonadZero m => (a -> Boolean) -> m a -> m a
 mfilter p m = do
     a <- m
     if p a then pure a else empty
+
+count :: forall f a. Foldable f => (a -> Boolean) -> f a -> Int
+count p = foldl (\s v -> if p v then s+1 else s) 0
 
 -----
 
