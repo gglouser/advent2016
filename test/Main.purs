@@ -25,6 +25,13 @@ import Test.Day15 (testDay15)
 import Test.Day16 (testDay16)
 import Test.Day17 (testDay17)
 import Test.Day18 (testDay18)
+import Test.Day19 (testDay19)
+import Test.Day20 (testDay20)
+import Test.Day21 (testDay21)
+import Test.Day22 (testDay22)
+import Test.Day23 (testDay23)
+import Test.Day24 (testDay24)
+import Test.Day25 (testDay25)
 
 main :: forall e. Eff
             ( console :: CONSOLE
@@ -52,3 +59,10 @@ main = do
   unit <$ testDay16
   unit <$ testDay17
   unit <$ testDay18
+  unit <$ testDay19
+  unit <$ testDay20
+  unit <$ testDay21
+  unit <$ testDay22
+  unit <$ testDay23
+  unit <$ testDay24
+  unit <$ testDay25

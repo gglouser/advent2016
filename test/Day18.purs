@@ -3,11 +3,10 @@ module Test.Day18 where
 import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-import Data.Maybe
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
 import Node.Encoding (Encoding(UTF8))
-import Test.Unit (runTests, test, equal, assert)
+import Test.Unit (runTests, test, equal)
 import Advent2016.Day18 (day18)
 
 testDay18 :: forall e. Eff (console :: CONSOLE, fs :: FS | e) Boolean
