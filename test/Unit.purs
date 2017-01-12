@@ -1,5 +1,7 @@
 module Test.Unit
-( runTests
+( TestMain
+, Test
+, runTests
 , test
 , failure
 , assert
@@ -14,23 +16,28 @@ import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Monad.Eff.Exception (EXCEPTION, throwException, catchException, error, message)
 import Data.Array (filter, length)
 import Data.Traversable (sequence)
+import Node.Process (PROCESS, exit)
 
-runTests :: forall eff. Array (Eff (console :: CONSOLE | eff) Boolean)
-                        -> Eff (console :: CONSOLE | eff) Unit
+type TestMain eff = Eff (console :: CONSOLE, process :: PROCESS | eff) Unit
+type Test eff = Eff eff Boolean
+
+runTests :: forall eff. Array (Test (console :: CONSOLE, process :: PROCESS | eff))
+    -> TestMain eff
 runTests tests = do
     successes <- sequence tests
     let total = length successes
-        passed = length $ filter id successes
-    log $ "FINISHED - " <> show passed <> "/" <> show total <> " passed"
+        passed = length (filter id successes)
+    log ("FINISHED - " <> show passed <> "/" <> show total <> " passed")
+    when (passed /= total) do
+        exit 1
 
 test :: forall eff. String -> Eff (err :: EXCEPTION, console :: CONSOLE | eff) Unit
-                    -> Eff (console :: CONSOLE | eff) Boolean
+    -> Test (console :: CONSOLE | eff)
 test lbl t = catchException failed runIt
     where
-        runIt = do log $ "Running " <> lbl
+        runIt = do log $ "running " <> lbl
                    t $> true
-        failed e = do log $ lbl <> " failed: " <> message e
-                      pure false
+        failed e = log (lbl <> " failed: " <> message e) $> false
 
 failure :: forall a eff. String -> Eff (err :: EXCEPTION | eff) a
 failure msg = throwException (error msg)

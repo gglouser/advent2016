@@ -18,6 +18,7 @@
   "devDependencies": {
     "purescript-psci-support": "^2.0.0",
     "purescript-assert": "^2.0.0",
-    "purescript-debug": "^2.0.0"
+    "purescript-debug": "^2.0.0",
+    "purescript-node-process": "^3.0.0"
   }
 }

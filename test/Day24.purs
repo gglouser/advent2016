@@ -1,15 +1,14 @@
 module Test.Day24 where
 
 import Prelude
-import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
 import Node.Encoding (Encoding(UTF8))
-import Test.Unit (runTests, test, equal)
+import Test.Unit (TestMain, Test, runTests, test, equal)
 import Advent2016.Day24 (day24)
 
-testDay24 :: forall e. Eff (console :: CONSOLE, fs :: FS | e) Boolean
+testDay24 :: forall e. Test (console :: CONSOLE, fs :: FS | e)
 testDay24 = test "day 24" do
     input <- readTextFile UTF8 "inputs/input24.txt"
     let result = day24 input
@@ -26,11 +25,11 @@ example_input =
     \#4.......3#\n\
     \###########\n"
 
-examples :: forall e. Eff (console :: CONSOLE | e) Boolean
+examples :: forall e. Test (console :: CONSOLE | e)
 examples = test "day 24 examples" do
     let result = day24 example_input
     equal 14 result.part1
     equal 20 result.part2
 
-main :: forall e. Eff (console :: CONSOLE, fs :: FS | e) Unit
+main :: forall e. TestMain (fs :: FS | e)
 main = runTests [examples, testDay24]

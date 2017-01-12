@@ -1,16 +1,15 @@
 module Test.Day17 where
 
 import Prelude
-import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.Maybe (Maybe(..))
-import Test.Unit (runTests, test, equal)
+import Test.Unit (TestMain, Test, runTests, test, equal)
 import Advent2016.Day17 (day17, day17part2)
 
 myinput :: String
 myinput = "bwnlcvfs"
 
-testDay17 :: forall e. Eff (console :: CONSOLE | e) Boolean
+testDay17 :: forall e. Test (console :: CONSOLE | e)
 testDay17 = test "day 17" do
     let result = day17 myinput
     log $ "part 1: " <> show result.part1
@@ -20,7 +19,7 @@ testDay17 = test "day 17" do
     log $ "part 2: " <> show result2
     equal 436 result2
 
-examples :: forall e. Eff (console :: CONSOLE | e) Boolean
+examples :: forall e. Test (console :: CONSOLE | e)
 examples = test "day 17 examples" do
     let result1 = day17 "ihgpwlah"
     equal (Just "DDRRRD") result1.part1
@@ -31,7 +30,7 @@ examples = test "day 17 examples" do
     let result3 = day17 "ulqzkmiv"
     equal (Just "DRURDRUDDLLDLUURRDULRLDUUDDDRR") result3.part1
 
-examples2 :: forall e. Eff (console :: CONSOLE | e) Boolean
+examples2 :: forall e. Test (console :: CONSOLE | e)
 examples2 = test "day 17 part 2 examples" do
     let result1 = day17part2 "ihgpwlah"
     equal 370 result1
@@ -42,5 +41,5 @@ examples2 = test "day 17 part 2 examples" do
     let result3 = day17part2 "ulqzkmiv"
     equal 830 result3
 
-main :: forall e. Eff (console :: CONSOLE | e) Unit
+main :: forall e. TestMain e
 main = runTests [examples, examples2, testDay17]

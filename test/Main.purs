@@ -5,7 +5,9 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Node.FS (FS)
+import Node.Process (PROCESS)
 import Test.Assert (ASSERT)
+import Test.Unit (runTests)
 
 import Test.Day01 (testDay01)
 import Test.Day02 (testDay02)
@@ -37,6 +39,7 @@ main :: forall e. Eff
             ( console :: CONSOLE
             , err :: EXCEPTION
             , fs :: FS
+            , process :: PROCESS
             , assert :: ASSERT
             | e) Unit
 main = do
@@ -51,18 +54,20 @@ main = do
   testDay08
   testDay09
   testDay10
-  testDay11
+  testDay11  -- a little slow
   -- testDay12  -- a little slow
   testDay13
   -- testDay14  -- md5 too slow
-  unit <$ testDay15
-  unit <$ testDay16
-  unit <$ testDay17
-  unit <$ testDay18
-  unit <$ testDay19
-  unit <$ testDay20
-  unit <$ testDay21
-  unit <$ testDay22
-  unit <$ testDay23
-  unit <$ testDay24
-  unit <$ testDay25
+  runTests
+    [ testDay15
+    , testDay16
+    , testDay17
+    , testDay18  -- a little slow
+    , testDay19
+    , testDay20
+    , testDay21
+    , testDay22
+    , testDay23
+    , testDay24
+    , testDay25
+    ]
