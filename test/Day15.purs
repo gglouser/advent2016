@@ -1,7 +1,7 @@
 module Test.Day15 where
 
 import Prelude
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Console (log)
 import Data.BigInt (fromInt, toString)
 import Data.Maybe (fromJust, isJust)
 import Node.FS (FS)
@@ -11,7 +11,7 @@ import Partial.Unsafe (unsafePartial)
 import Test.Unit (TestMain, Test, runTests, test, assert, equal)
 import Advent2016.Day15 (day15)
 
-testDay15 :: forall e. Test (console :: CONSOLE, fs :: FS | e)
+testDay15 :: forall e. Test (fs :: FS | e)
 testDay15 = test "day 15" do
     resultMB <- day15 <$> readTextFile UTF8 "inputs/input15.txt"
     assert "result is Just" $ isJust resultMB
@@ -21,7 +21,7 @@ testDay15 = test "day 15" do
     equal (fromInt 317371) result.part1
     equal (fromInt 2080951) result.part2
 
-examples :: forall e. Test (console :: CONSOLE | e)
+examples :: forall e. Test e
 examples = test "day 15 examples" do
     let resultMB = day15 "Disc #1 has 5 positions; at time=0, it is at position 4.\n\
                          \Disc #2 has 2 positions; at time=0, it is at position 1.\n"

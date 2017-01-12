@@ -7,38 +7,29 @@ import Control.Monad.Eff.Exception (EXCEPTION)
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
 import Node.Encoding (Encoding(UTF8))
-import Test.Assert (ASSERT, assert)
+import Test.Unit (TestMain, Test, runTests, test, equal)
 import Advent2016.Day07 (day07)
 
-type Test a = forall e. Eff
-                ( console :: CONSOLE
-                , fs :: FS
-                , err :: EXCEPTION
-                , assert :: ASSERT
-                | e) a
-
-testDay07 :: Test Unit
-testDay07 = do
-    log "Running Day07"
+testDay07 :: forall e. Test (fs :: FS | e)
+testDay07 = test "day 07" do
     result <- day07 <$> readTextFile UTF8 "inputs/input07.txt"
     log $ "supporting TLS: " <> show result.countTLS
     log $ "supporting SSL: " <> show result.countSSL
-    assert $ result.countTLS == 105
-    assert $ result.countSSL == 258
+    equal 105 result.countTLS
+    equal 258 result.countSSL
 
-testEx :: String -> Int -> Test Unit
+testEx :: forall e. String -> Int -> Eff (console :: CONSOLE, err :: EXCEPTION | e) Unit
 testEx addr n = do
     let result = day07 addr
-    assert $ result.countTLS == n
+    equal n result.countTLS
 
-testEx2 :: String -> Int -> Test Unit
+testEx2 :: forall e. String -> Int -> Eff (console :: CONSOLE, err :: EXCEPTION | e) Unit
 testEx2 addr n = do
     let result = day07 addr
-    assert $ result.countSSL == n
+    equal n result.countSSL
 
-examples :: Test Unit
-examples = do
-    log "Running day 07 examples"
+examples :: forall e. Test e
+examples = test "day 07 examples" do
     testEx "abba[mnop]qrst" 1
     testEx "abcd[bddb]xyyx" 0
     testEx "aaaa[qwer]tyui" 0
@@ -53,7 +44,5 @@ examples = do
     -- gkg ALSO in hyp but that is not disallowed as long as gkg is in sup
     testEx2 "gkg[kgk]iii[gkg]jjj" 1
 
-main :: Test Unit
-main = do
-    examples
-    testDay07
+main :: forall e. TestMain (fs :: FS | e)
+main = runTests [examples, testDay07]

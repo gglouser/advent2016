@@ -1,45 +1,32 @@
 module Test.Day03 where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.Eff.Console (log)
 import Data.Maybe (fromJust, isJust)
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
 import Node.Encoding (Encoding(UTF8))
 import Partial.Unsafe (unsafePartial)
-import Test.Assert (ASSERT, assert)
+import Test.Unit (TestMain, Test, runTests, test, equal, assert)
 import Advent2016.Day03 (day03)
 
-type Test a = forall e. Eff
-                ( console :: CONSOLE
-                , fs :: FS
-                , err :: EXCEPTION
-                , assert :: ASSERT
-                | e) a
-
-testDay03 :: Test Unit
-testDay03 = unsafePartial do
-    log "Running Day03"
+testDay03 :: forall e. Test (fs :: FS | e)
+testDay03 = test "day 03" do
     resultMB <- day03 <$> readTextFile UTF8 "inputs/input03.txt"
-    assert $ isJust resultMB
-    let result = fromJust resultMB
+    assert "result is Just" $ isJust resultMB
+    let result = unsafePartial $ fromJust resultMB
     log $ "num triangles: " <> show result.numTris
     log $ "num triangles 2: " <> show result.numTris2
-    assert $ result.numTris == 982
-    assert $ result.numTris2 == 1826
+    equal 982 result.numTris
+    equal 1826 result.numTris2
 
-examples :: Test Unit
-examples = unsafePartial do
-    log "Running day 3 examples"
+examples :: forall e. Test e
+examples = test "day 03 examples" do
     let resultMB = day03 "5 10 25\n3 4 5\n"
-    assert $ isJust resultMB
-    let result = fromJust resultMB
-    assert $ result.numTris == 1
-    assert $ result.numTris2 == 0
+    assert "result is Just" $ isJust resultMB
+    let result = unsafePartial $ fromJust resultMB
+    equal 1 result.numTris
+    equal 0 result.numTris2
 
-main :: Test Unit
-main = do
-    examples
-    testDay03
+main :: forall e. TestMain (fs :: FS | e)
+main = runTests [examples, testDay03]

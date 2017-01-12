@@ -1,14 +1,14 @@
 module Test.Day22 where
 
 import Prelude
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Console (log)
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
 import Node.Encoding (Encoding(UTF8))
 import Test.Unit (TestMain, Test, runTests, test, equal)
 import Advent2016.Day22 (day22, parse, pprint)
 
-testDay22 :: forall e. Test (console :: CONSOLE, fs :: FS | e)
+testDay22 :: forall e. Test (fs :: FS | e)
 testDay22 = test "day 22" do
     input <- readTextFile UTF8 "inputs/input22.txt"
     log $ pprint $ parse input
@@ -31,7 +31,7 @@ exampleInput = "\
 \/dev/grid/node-x2-y1    9T    8T     1T   88%\n\
 \/dev/grid/node-x2-y2    9T    6T     3T   66%\n"
 
-examples :: forall e. Test (console :: CONSOLE | e)
+examples :: forall e. Test e
 examples = test "day 22 examples" do
     let result = day22 exampleInput
     equal 7 result.part1

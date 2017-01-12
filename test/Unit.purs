@@ -19,9 +19,9 @@ import Data.Traversable (sequence)
 import Node.Process (PROCESS, exit)
 
 type TestMain eff = Eff (console :: CONSOLE, process :: PROCESS | eff) Unit
-type Test eff = Eff eff Boolean
+type Test eff = Eff (console :: CONSOLE | eff) Boolean
 
-runTests :: forall eff. Array (Test (console :: CONSOLE, process :: PROCESS | eff))
+runTests :: forall eff. Array (Test (process :: PROCESS | eff))
     -> TestMain eff
 runTests tests = do
     successes <- sequence tests
@@ -32,7 +32,7 @@ runTests tests = do
         exit 1
 
 test :: forall eff. String -> Eff (err :: EXCEPTION, console :: CONSOLE | eff) Unit
-    -> Test (console :: CONSOLE | eff)
+    -> Test eff
 test lbl t = catchException failed runIt
     where
         runIt = do log $ "running " <> lbl

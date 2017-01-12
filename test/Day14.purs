@@ -1,33 +1,23 @@
 module Test.Day14 where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Test.Assert (ASSERT, assert)
+import Control.Monad.Eff.Console (log)
+import Test.Unit (TestMain, Test, test, runTests, equal)
 import Advent2016.Day14 (day14)
 
-type Test a = forall e. Eff
-                ( console :: CONSOLE
-                , assert :: ASSERT
-                | e) a
-
-testDay14 :: Test Unit
-testDay14 = do
-    log "Running Day14"
+testDay14 :: forall e. Test e
+testDay14 = test "day 14" do
     let result = day14 "zpqevtbw"
     log $ "<part1>: " <> show result.part1
     log $ "<part2>: " <> show result.part2
-    assert $ result.part1 == 16106
-    assert $ result.part2 == 22423
+    equal 16106 result.part1
+    equal 22423 result.part2
 
-examples :: Test Unit
-examples = do
-    log "Running day 14 examples"
+examples :: forall e. Test e
+examples = test "day 14 examples" do
     let result = day14 "abc"
-    assert $ result.part1 == 22728
-    assert $ result.part2 == 22551
+    equal 22728 result.part1
+    equal 22551 result.part2
 
-main :: Test Unit
-main = do
-    examples
-    testDay14
+main :: forall e. TestMain e
+main = runTests [examples, testDay14]

@@ -1,14 +1,14 @@
 module Test.Day16 where
 
 import Prelude
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Console (log)
 import Test.Unit (TestMain, Test, runTests, test, equal)
 import Advent2016.Day16 (day16)
 
 myinput :: String
 myinput = "10011111011011001"
 
-testDay16 :: forall e. Test (console :: CONSOLE | e)
+testDay16 :: forall e. Test e
 testDay16 = test "day 16" do
     let result = day16 272 myinput
     log $ "part1: " <> result
@@ -18,7 +18,7 @@ testDay16 = test "day 16" do
     log $ "part2: " <> result2
     equal "01101100001100100" result2
 
-examples :: forall e. Test (console :: CONSOLE | e)
+examples :: forall e. Test e
 examples = test "day 16 examples" do
     let result = day16 20 "10000"
     equal "01100" result

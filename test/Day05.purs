@@ -1,36 +1,24 @@
 module Test.Day05 where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Eff.Exception (EXCEPTION)
-import Test.Assert (ASSERT, assert)
+import Control.Monad.Eff.Console (log)
+import Test.Unit (TestMain, Test, runTests, test, equal)
 import Advent2016.Day05 (day05)
 
-type Test a = forall e. Eff
-                ( console :: CONSOLE
-                , err :: EXCEPTION
-                , assert :: ASSERT
-                | e) a
-
-testDay05 :: Test Unit
-testDay05 = do
-    log "Running Day05"
+testDay05 :: forall e. Test e
+testDay05 = test "day 05" do
     let input = "wtnhxymk"
     let result = day05 input
     log $ "password: " <> show result.password
     log $ "password 2: " <> show result.password2
-    assert $ result.password == "2414bc77"
-    assert $ result.password2 == "437e60fc"
+    equal "2414bc77" result.password
+    equal "437e60fc" result.password2
 
-examples :: Test Unit
-examples = do
-    log "Running day 5 examples"
+examples :: forall e. Test e
+examples = test "day 5 examples" do
     let result = day05 "abc"
-    assert $ result.password == "18f47a30"
-    assert $ result.password2 == "05ace8e3"
+    equal "18f47a30" result.password
+    equal "05ace8e3" result.password2
 
-main :: Test Unit
-main = do
-    examples
-    testDay05
+main :: forall e. TestMain e
+main = runTests [examples, testDay05]

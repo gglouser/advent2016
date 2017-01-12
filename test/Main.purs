@@ -1,13 +1,9 @@
 module Test.Main where
 
 import Prelude
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.Eff.Console (log)
 import Node.FS (FS)
-import Node.Process (PROCESS)
-import Test.Assert (ASSERT)
-import Test.Unit (runTests)
+import Test.Unit (TestMain, runTests)
 
 import Test.Day01 (testDay01)
 import Test.Day02 (testDay02)
@@ -35,32 +31,26 @@ import Test.Day23 (testDay23)
 import Test.Day24 (testDay24)
 import Test.Day25 (testDay25)
 
-main :: forall e. Eff
-            ( console :: CONSOLE
-            , err :: EXCEPTION
-            , fs :: FS
-            , process :: PROCESS
-            , assert :: ASSERT
-            | e) Unit
+main :: forall e. TestMain (fs :: FS | e)
 main = do
   log "Running all days..."
-  testDay01
-  testDay02
-  testDay03
-  testDay04
-  -- testDay05  -- md5 too slow
-  testDay06
-  testDay07
-  testDay08
-  testDay09
-  testDay10
-  testDay11  -- a little slow
-  -- testDay12  -- a little slow
-  testDay13
-  -- testDay14  -- md5 too slow
   runTests
-    [ testDay15
-    , testDay16
+    [ testDay01
+    , testDay02
+    , testDay03
+    , testDay04
+    -- , testDay05  -- md5 too slow
+    , testDay06
+    , testDay07
+    , testDay08
+    , testDay09
+    , testDay10
+    , testDay11  -- a little slow
+    -- , testDay12  -- too slow
+    , testDay13
+    -- , testDay14  -- md5 too slow
+    , testDay15
+    , testDay16  -- a little slow
     , testDay17
     , testDay18  -- a little slow
     , testDay19

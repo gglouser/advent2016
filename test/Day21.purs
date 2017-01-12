@@ -1,7 +1,7 @@
 module Test.Day21 where
 
 import Prelude
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Eff.Console (log)
 import Data.Either (Either(..))
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
@@ -9,7 +9,7 @@ import Node.Encoding (Encoding(UTF8))
 import Test.Unit (TestMain, Test, runTests, test, equal, failure)
 import Advent2016.Day21 (day21)
 
-testDay21 :: forall e. Test (console :: CONSOLE, fs :: FS | e)
+testDay21 :: forall e. Test (fs :: FS | e)
 testDay21 = test "day 21" do
     input <- readTextFile UTF8 "inputs/input21.txt"
     let result' = day21 input "abcdefgh" "fbgdceah"
@@ -21,7 +21,7 @@ testDay21 = test "day 21" do
             log $ "part 2: " <> show result.part2
             equal "cegdahbf" result.part2
 
-examples :: forall e. Test (console :: CONSOLE | e)
+examples :: forall e. Test e
 examples = test "day 21 examples" do
     let result' = day21 "swap position 4 with position 0\n\
                        \swap letter d with letter b\n\
