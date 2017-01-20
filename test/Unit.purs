@@ -43,9 +43,8 @@ failure :: forall a eff. String -> Eff (err :: EXCEPTION | eff) a
 failure msg = throwException (error msg)
 
 assert :: forall eff. String -> Boolean -> Eff (err :: EXCEPTION | eff) Unit
-assert msg p = unless p $ failure msg
+assert msg p = unless p (failure msg)
 
 equal :: forall eff a. (Eq a, Show a) => a -> a -> Eff (err :: EXCEPTION | eff) Unit
-equal expected actual =
-    unless (expected == actual) $
-        failure $ "expected " <> show expected <> ", got " <> show actual
+equal expected actual = assert failMsg (expected == actual)
+    where failMsg = "expected " <> show expected <> ", got " <> show actual
