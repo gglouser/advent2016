@@ -2,30 +2,32 @@ module Test.Day01 where
 
 import Prelude
 import Control.Monad.Eff.Console (log)
-import Data.Maybe (Maybe(..), fromJust, isJust)
+import Data.Maybe (Maybe(..))
 import Node.FS (FS)
 import Node.FS.Sync (readTextFile)
 import Node.Encoding (Encoding(UTF8))
-import Partial.Unsafe (unsafePartial)
-import Test.Unit (TestMain, Test, runTests, test, equal, assert)
-import Advent2016.Day01 (day01)
+import Test.Unit (TestMain, Test, runTests, test, equal, failure)
+import Advent2016.Day01 (day01, parse, Move(..), Dir(..))
 
 testDay01 :: forall e. Test (fs :: FS | e)
 testDay01 = test "day 01" do
-    resultMB <- day01 <$> readTextFile UTF8 "inputs/input01.txt"
-    assert "result is Just" $ isJust resultMB
-    let result = unsafePartial $ fromJust resultMB
-    log $ "Easter Bunny HQ is " <> show result.hqDist <> " blocks away"
-    log $ "*Actual* Easter Bunny HQ is " <> show result.actualHQDist <> " blocks away"
-    equal 241 result.hqDist
-    equal (Just 116) result.actualHQDist
+    inputMB <- parse <$> readTextFile UTF8 "inputs/input01.txt"
+    case inputMB of
+        Nothing -> failure "parse failed"
+        Just input -> do
+            let result = day01 input
+            log $ "Easter Bunny HQ is " <> show result.hqDist <> " blocks away"
+            equal 241 result.hqDist
+            log $ "*Actual* Easter Bunny HQ is " <> show result.actualHQDist <> " blocks away"
+            equal (Just 116) result.actualHQDist
 
 examples :: forall e. Test e
-examples = unsafePartial $ test "day 01 examples" do
-    equal 5 (fromJust $ day01 "R2, L3").hqDist
-    equal 2 (fromJust $ day01 "R2, R2, R2").hqDist
-    equal 12 (fromJust $ day01 "R5, L5, R5, R3").hqDist
-    equal (Just 4) (fromJust $ day01 "R8, R4, R4, R8").actualHQDist
+examples = test "day 01 examples" do
+    equal (Just [Move R 2, Move L 3, Move R 123]) (parse "R2, L3, R123\n")
+    equal 5 (day01 [Move R 2, Move L 3]).hqDist
+    equal 2 (day01 [Move R 2, Move R 2, Move R 2]).hqDist
+    equal 12 (day01 [Move R 5, Move L 5, Move R 5, Move R 3]).hqDist
+    equal (Just 4) (day01 [Move R 8, Move R 4, Move R 4, Move R 8]).actualHQDist
 
 main :: forall e. TestMain (fs :: FS | e)
 main = runTests [examples, testDay01]

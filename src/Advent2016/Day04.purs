@@ -1,30 +1,26 @@
 module Advent2016.Day04 where
 
 import Prelude
-import Data.Array (length, filter, sortBy, group', take)
+import Advent2016.Util (lines, mkre)
+import Data.Array (length, filter, sortBy, group', take, (!!))
 import Data.Char (toCharCode, fromCharCode)
-import Data.Maybe (Maybe(..))
-import Data.Either (either)
+import Data.Maybe (Maybe)
 import Data.Int (fromString)
 import Data.NonEmpty (head, tail)
-import Data.String (trim, toCharArray, fromCharArray) 
-import Data.String.Regex (regex, match)
-import Data.String.Regex.Flags (noFlags)
-import Data.String.Utils (lines, mapChars)
+import Data.String (toCharArray, fromCharArray)
+import Data.String.Regex (match)
+import Data.String.Utils (mapChars)
 import Data.Traversable (traverse, sequence, sum)
 
 type Room = { name :: String, sector :: Int, checksum :: String }
 
-parseRoom :: Array String -> Maybe Room
-parseRoom [_, name, sector, checksum] = do
-    sector' <- fromString sector
-    pure { name: name, sector: sector', checksum: checksum }
-parseRoom _ = Nothing
-
 parse :: String -> Maybe (Array Room)
-parse s = do
-    re <- either (const Nothing) Just $ regex "([a-z-]+)-(\\d+)\\[([a-z]+)\\]" noFlags
-    s # trim >>> lines >>> traverse (match re >=> sequence >=> parseRoom)
+parse = lines >>> traverse (match re >=> sequence >=> parseRoom)
+    where
+        re = mkre "([a-z-]+)-(\\d+)\\[([a-z]+)\\]"
+        parseRoom m = {name:_,sector:_,checksum:_} <$> m !! 1
+                                                   <*> (fromString =<< m !! 2)
+                                                   <*> m !! 3
 
 getChecksum :: String -> String
 getChecksum = toCharArray >>> filter (_ /= '-')
@@ -44,10 +40,10 @@ decryptName r = mapChars dec r.name
         isLower c = c >= 'a' && c <= 'z'
         ccA = toCharCode 'a'
 
-day04 :: String -> Maybe { sectorIDSum :: Int, npoStorage :: Array Int }
-day04 input = do
-    rooms <- parse input
-    let realRooms = filter isRealRoom rooms
-    pure { sectorIDSum: sum $ map _.sector realRooms
-         , npoStorage: _.sector <$> filter (\r -> decryptName r == "northpole object storage") realRooms
-         }
+day04 :: Array Room -> { sectorIDSum :: Int, npoStorage :: Array Int }
+day04 rooms = { sectorIDSum: sum (_.sector <$> realRooms)
+              , npoStorage: _.sector <$> filter isNPOStorage realRooms
+              }
+    where
+        realRooms = filter isRealRoom rooms
+        isNPOStorage r = decryptName r == "northpole object storage"
